@@ -1,0 +1,58 @@
+version: '3'
+
+services:
+  backend:
+    build:
+      context: ./backend/cakephp
+      dockerfile: Dockerfile
+    ports:
+      - "8060:80"
+    volumes:
+      - ./backend/cakephp:/var/www/html
+    depends_on:
+      - db
+#     networks:
+#       - app-network
+# 
+#   nginx:
+#     image: nginx:alpine
+#     volumes:
+#       - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+#       - ./backend/cakephp:/var/www/html
+#     ports:
+#       - "8060:80"
+#     depends_on:
+#       - backend
+#       - frontend
+#     networks:
+#       - app-network
+
+  frontend:
+    build:
+      context: ./frontend/nextjs
+      dockerfile: Dockerfile
+    volumes:
+      - ./frontend/nextjs:/usr/src/app
+    ports:
+      - "3060:3000"
+    command: npm run dev
+#     networks:
+#       - app-network
+
+  db:
+    image: mysql:5.7
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: cakephp
+      MYSQL_USER: user
+      MYSQL_PASSWORD: user
+    ports:
+      - "3306:3306"
+#     networks:
+#       - app-network
+    volumes:
+      - db_data:/var/lib/mysql
+
+volumes:
+  db_data:
+    driver: local
